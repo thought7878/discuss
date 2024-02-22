@@ -2,6 +2,11 @@
 
 import { z } from 'zod';
 import { auth } from '@/auth';
+import type { Topic } from '@prisma/client';
+import { db } from '@/db';
+import { redirect } from 'next/navigation';
+import paths from '../path';
+import { revalidatePath } from 'next/cache';
 
 export interface CreateTopicFormState {
   errors: {
@@ -23,6 +28,7 @@ export async function createTopic(
   formState: CreateTopicFormState,
   formData: FormData
 ): Promise<CreateTopicFormState> {
+  // validate with zod
   const result = createTopicSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description'),
@@ -34,12 +40,35 @@ export async function createTopic(
     return { errors: { _form: ['Must be signed in first'] } };
   }
 
+  // zod validate fail
   if (!result.success) {
     // console.log(result.error.flatten().fieldErrors);
     return { errors: result.error.flatten().fieldErrors };
   }
 
-  return {
-    errors: {},
-  };
+  // save to database
+  let topic: Topic;
+  try {
+    // throw new Error('create topic failed!!!');
+    topic = await db.topic.create({
+      data: { slug: result.data.name, description: result.data.description },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return {
+        errors: { _form: [error.message] },
+      };
+    } else {
+      return {
+        errors: {
+          _form: ['Something went wrong! Wart a minute to create topic'],
+        },
+      };
+    }
+  }
+
+  // update home
+  revalidatePath('/');
+
+  redirect(paths.topicShow(topic.slug));
 }

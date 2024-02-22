@@ -18,7 +18,7 @@ export default function TopicCreateForm() {
   });
 
   return (
-    <div>
+    <div className='flex justify-center'>
       <Popover placement='left'>
         <PopoverTrigger>
           <Button color='primary'>Create a topic</Button>

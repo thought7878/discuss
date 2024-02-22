@@ -61,7 +61,7 @@ export async function createTopic(
     } else {
       return {
         errors: {
-          _form: ['Something went wrong! Wart a minute to create topic'],
+          _form: ['Something went wrong! Wait a minute to create topic'],
         },
       };
     }

@@ -1,4 +1,5 @@
 import { Button } from '@nextui-org/react';
+import PostCreateForm from '@/components/posts/create-post-form';
 
 export interface TopicShowPageProps {
   params: {
@@ -14,9 +15,7 @@ export default function TopicShowPage({ params }: TopicShowPageProps) {
         <h1 className='text-2xl font-bold mb-2'>{topicName}</h1>
       </div>
       <div>
-        <Button color='primary' type='submit'>
-          Create Post
-        </Button>
+        <PostCreateForm topicName={topicName} />
       </div>
     </div>
   );
